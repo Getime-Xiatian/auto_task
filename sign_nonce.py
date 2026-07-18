@@ -45,9 +45,8 @@ def main():
         print("[FAIL] 环境变量 GITEE_TOKEN 未设置")
         sys.exit(1)
 
-    url = f"https://gitee.com/api/v5/repos/{OWNER}/{REPO}/issues/{ISSUE_NUM}/comments"
-    resp = requests.post(url, json={"body": comment_body},
-                         params={"access_token": token})
+    url = f"https://gitee.com/api/v5/repos/{OWNER}/{REPO}/issues/{ISSUE_NUM}/comments?access_token={token}"
+    resp = requests.post(url, data={"body": comment_body})
 
     if resp.status_code == 201:
         print(f"[OK] Nonce 已发布 (Issue #{ISSUE_NUM}), 有效至 {today}")
