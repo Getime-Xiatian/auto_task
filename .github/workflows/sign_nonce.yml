@@ -29,8 +29,5 @@ jobs:
           echo "${{ secrets.RSA_PRIVATE_KEY }}" > rsa_private_key.pem
           chmod 600 rsa_private_key.pem
 
-      - name: Copy sign script into repo
-        run: cp sign_nonce.py gitee_repo/sign_nonce.py 2>/dev/null; :
-
-      - name: Sign nonce and push
-        run: python -u sign_nonce.py
+      - name: Sign nonce and push to Gitee
+        run: python sign_nonce.py
