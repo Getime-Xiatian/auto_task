@@ -1,0 +1,29 @@
+name: Sign Nonce Daily
+
+on:
+  schedule:
+    - cron: "0 0 * * *"     # 每天 UTC 00:00
+  workflow_dispatch:          # 也可手动触发
+
+jobs:
+  sign:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install deps
+        run: pip install pycryptodome requests
+
+      - name: Store private key
+        run: |
+          echo "${{ secrets.RSA_PRIVATE_KEY }}" > rsa_private_key.pem
+          chmod 600 rsa_private_key.pem
+
+      - name: Sign nonce
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+        run: python sign_nonce.py
