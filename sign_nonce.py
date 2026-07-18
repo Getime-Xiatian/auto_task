@@ -49,8 +49,13 @@ def main():
     sha = None
     r_get = requests.get(f"{API_BASE}?access_token={token}")
     if r_get.status_code == 200:
-        sha = r_get.json().get("sha")
-        print(f"[INFO] 文件已存在, sha={sha[:12]}... 将覆盖更新")
+        data = r_get.json()
+        if isinstance(data, dict):
+            sha = data.get("sha")
+            print(f"[INFO] file exists, sha={sha[:12]}... will overwrite")
+        else:
+            print("[INFO] path is directory, will create new file")
+        
     elif r_get.status_code == 404:
         print("[INFO] 文件不存在, 将新建")
 
