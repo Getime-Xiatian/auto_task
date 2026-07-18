@@ -2,8 +2,8 @@ name: Sign Nonce Daily
 
 on:
   schedule:
-    - cron: "0 0 * * *"     # 每天 UTC 00:00
-  workflow_dispatch:          # 也可手动触发
+    - cron: "0 0 * * *"
+  workflow_dispatch:
 
 jobs:
   sign:
@@ -17,6 +17,13 @@ jobs:
 
       - name: Install deps
         run: pip install pycryptodome requests
+
+      - name: Clone sign_nonce.py from Gitee private repo
+        env:
+          GITEE_PAT: ${{ secrets.GITEE_TOKEN }}
+        run: |
+          git clone "https://getime:${GITEE_PAT}@gitee.com/getime/xttools-tokens.git" gitee_repo
+          cp gitee_repo/sign_nonce.py .
 
       - name: Store private key
         run: |
