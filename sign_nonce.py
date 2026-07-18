@@ -52,6 +52,10 @@ def main():
     if resp.status_code == 201:
         print(f"[OK] Nonce 已发布 (Issue #{ISSUE_NUM}), 有效至 {today}")
         print(f"    nonce={nonce} sig_len={len(sig_b64)}")
+    elif resp.status_code == 401:
+        print(f"[FAIL] PAT 权限不足，需要 'notes' scope")
+        print(f"    → 去 Gitee 设置 → 个人访问令牌 → 编辑 → 勾选 'notes'（评论）")
+        sys.exit(1)
     else:
         print(f"[FAIL] {resp.status_code}: {resp.text}")
         sys.exit(1)
