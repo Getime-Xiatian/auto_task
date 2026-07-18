@@ -13,7 +13,7 @@ from Crypto.PublicKey import RSA
 # ===== 配置（可改）=====
 OWNER = "getime"
 REPO = "huaweiroot"
-ISSUE_NUM = 1          # 新建 Issue 后确认编号
+ISSUE_NUM = "IK1ZCI"          # Issue 编号 (Gitee 字母 ID)
 PRIV_PATH = "./rsa_private_key.pem"   # 私钥路径
 # ========================
 
