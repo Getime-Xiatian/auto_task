@@ -67,7 +67,11 @@ def main():
     if sha:
         put_data["sha"] = sha
 
-    r_put = requests.post(
+    r_put = requests.put(
+        API_BASE,
+        params={"access_token": token},
+        json=put_data
+    ) if sha else requests.post(
         API_BASE,
         params={"access_token": token},
         json=put_data
