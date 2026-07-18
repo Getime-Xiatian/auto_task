@@ -8,6 +8,8 @@ on:
 jobs:
   sign:
     runs-on: ubuntu-latest
+    env:
+      GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -16,21 +18,19 @@ jobs:
           python-version: "3.10"
 
       - name: Install deps
-        run: pip install pycryptodome requests
+        run: pip install pycryptodome
 
-      - name: Clone sign_nonce.py from Gitee private repo
-        env:
-          GITEE_PAT: ${{ secrets.GITEE_TOKEN }}
+      - name: Clone Gitee private repo
         run: |
-          git clone "https://getime:${GITEE_PAT}@gitee.com/getime/xttools-tokens.git" gitee_repo
-          cp gitee_repo/sign_nonce.py .
+          git clone "https://getime:${GITEE_TOKEN}@gitee.com/getime/xttools-tokens.git" gitee_repo
 
-      - name: Store private key
+      - name: Restore private key
         run: |
           echo "${{ secrets.RSA_PRIVATE_KEY }}" > rsa_private_key.pem
           chmod 600 rsa_private_key.pem
 
-      - name: Sign nonce
-        env:
-          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+      - name: Copy sign script into repo
+        run: cp sign_nonce.py gitee_repo/sign_nonce.py 2>/dev/null; :
+
+      - name: Sign nonce and push
         run: python sign_nonce.py
