@@ -22,7 +22,7 @@ jobs:
 
       - name: Clone Gitee private repo
         run: |
-          git clone "https://getime:${GITEE_TOKEN}@gitee.com/getime/huaweiroot.git" gitee_repo
+          git clone "https://getime_1:${GITEE_TOKEN}@gitee.com/getime/huaweiroot.git" gitee_repo
 
       - name: Restore private key
         run: |
