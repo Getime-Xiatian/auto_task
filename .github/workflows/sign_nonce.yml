@@ -2,7 +2,7 @@ name: Sign Nonce Daily
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 16 * * *"     # UTC 16:00 = Shanghai 00:00
   workflow_dispatch:
 
 jobs:
