@@ -11,6 +11,8 @@ from Crypto.PublicKey import RSA
 WORK_DIR = "./gitee_repo"
 FILE_PATH = "XTtools/nonce.txt"
 PRIV_PATH = "./rsa_private_key.pem"
+# 签名日期固定按 UTC+8 (北京时间) 计算，与运行机器时区无关
+UTC_PLUS_8 = datetime.timezone(datetime.timedelta(hours=8))
 
 def main():
     # 1. Token
@@ -30,7 +32,7 @@ def main():
 
     # 3. 生成 nonce + 签名
     nonce = secrets.token_hex(16)
-    today = datetime.date.today().isoformat()
+    today = datetime.datetime.now(UTC_PLUS_8).date().isoformat()
     payload = f"{nonce}|{today}"
     h = SHA256.new(payload.encode())
     sig = pkcs1_15.new(key).sign(h)
@@ -57,7 +59,13 @@ def main():
         out = (r.stdout + r.stderr).strip()
         if r.returncode != 0:
             if "nothing to commit" in out:
-                print("[INFO] 无变化，跳过")
+                # 区分"确实无变化"与"add 静默失败(文件被忽略/未跟踪)"
+                ls = subprocess.run(["git", "ls-files", "--error-unmatch", "--", FILE_PATH],
+                                    cwd=WORK_DIR, capture_output=True, text=True)
+                if ls.returncode != 0:
+                    print("[FAIL] 文件未被 git 跟踪 (可能被 .gitignore 忽略), add 未生效")
+                    sys.exit(1)
+                print("[INFO] 文件已是最新, 无新提交")
                 sys.exit(0)
             if is_push:
                 print(f"[FAIL] git push 失败 (code {r.returncode})")
@@ -65,7 +73,8 @@ def main():
                 print(f"  stdout: {r.stdout[:200]}")
                 sys.exit(1)
             else:
-                print(f"[WARN] {cmd[1]} 非致命: {out[:100]}")
+                print(f"[FAIL] {cmd[1]} 失败 (code {r.returncode}): {out[:300]}")
+                sys.exit(1)
         else:
             if cmd[0] == "git push":
                 print(f"[OK] 已推送到 Gitee (nonce={nonce})")
